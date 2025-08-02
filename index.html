@@ -235,28 +235,21 @@
             };
 
             // Fungsi untuk memanggil Gemini API dan membuat puisi
+           // Fungsi untuk memanggil API proxy di Vercel
             const generatePoem = async () => {
                 generatePoemBtn.disabled = true;
                 generatePoemBtn.textContent = 'Menciptakan keajaiban...';
                 geminiError.classList.add('hidden');
                 poemContainer.classList.add('hidden');
 
-                // *** PROMPT DIUBAH DI SINI ***
-                const prompt = "Tuliskan sebuah puisi ulang tahun yang romantis, singkat, dan menyentuh hati untuk pacarku.";
-                const apiKey = ""; // Kunci API akan ditangani oleh lingkungan eksekusi
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                // *** URL API DIUBAH DI SINI ***
+                // Sekarang kita panggil endpoint lokal kita di Vercel
+                const apiUrl = '/api/generate-poem';
                 
-                const payload = {
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                };
-
                 try {
+                    // Kita tidak perlu lagi mengirim payload, karena prompt sudah ada di backend
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
                     });
 
                     if (!response.ok) {
@@ -271,13 +264,15 @@
                         const generatedText = result.candidates[0].content.parts[0].text;
                         poemText.textContent = generatedText;
                         poemContainer.classList.remove('hidden');
-                        generatePoemBtn.style.display = 'none'; // Sembunyikan tombol setelah berhasil
+                        generatePoemBtn.style.display = 'none';
                     } else {
-                        throw new Error("Invalid response structure from API.");
+                        // Jika ada error dari Gemini, coba tampilkan
+                        const errorMessage = result.error?.message || "Invalid response structure from API.";
+                        throw new Error(errorMessage);
                     }
 
                 } catch (error) {
-                    console.error("Error calling Gemini API:", error);
+                    console.error("Error calling backend API:", error);
                     geminiError.classList.remove('hidden');
                     generatePoemBtn.disabled = false;
                     generatePoemBtn.textContent = '✨ Coba Lagi Buat Puisi';
@@ -291,4 +286,5 @@
     </script>
 </body>
 </html>
+
 
