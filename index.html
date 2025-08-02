@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun!</title>
+    
+    <!-- Menggunakan Tailwind CSS untuk styling yang cepat dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Menggunakan Google Fonts untuk tampilan teks yang lebih menarik -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Library untuk animasi kembang api dan confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Menambahkan font kustom ke body dan untuk judul */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .font-pacifico {
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* Animasi untuk nyala lilin yang berkedip */
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scaleY(0.95);
+                box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.7);
+            }
+        }
+        .flame {
+            width: 16px;
+            height: 28px;
+            background-color: orange;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px 3px rgba(255, 165, 0, 0.5);
+        }
+        .flame::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 14px;
+            background-color: yellow;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Canvas untuk confetti agar berada di seluruh layar */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Agar tidak mengganggu klik pada elemen lain */
+            z-index: 9999;
+        }
+
+        /* Styling untuk tombol dan kontainer puisi */
+        #poem-container {
+            white-space: pre-wrap; /* Menjaga format baris baru dari puisi */
+        }
+
+        /* --- STYLING BARU UNTUK KUE --- */
+        .cake-layer {
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .frosting {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to right, #f8bbd0, #fce4ec);
+            border-radius: 50% / 10px;
+        }
+        .frosting-drip {
+            position: absolute;
+            top: 5px;
+            width: 12px;
+            height: 25px;
+            background: #f8bbd0;
+            border-radius: 50%;
+        }
+        .drip1 { left: 10%; }
+        .drip2 { left: 30%; height: 35px; }
+        .drip3 { left: 55%; }
+        .drip4 { left: 80%; height: 30px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white overflow-x-hidden">
+
+    <!-- Canvas untuk animasi confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <main class="min-h-screen flex flex-col items-center justify-center p-4 transition-opacity duration-1000">
+        
+        <!-- Kontainer Utama -->
+        <div id="main-container" class="text-center">
+            
+            <!-- Pesan Awal -->
+            <div id="initial-message">
+                <h1 class="font-pacifico text-5xl md:text-7xl text-yellow-300 drop-shadow-lg">Selamat Ulang Tahun!</h1>
+                <p id="instruction" class="mt-4 text-lg text-slate-300">Klik lilinnya untuk sebuah kejutan...</p>
+            </div>
+
+            <!-- Kue Ulang Tahun yang Diperbarui -->
+            <div id="birthday-cake" class="relative mt-16 cursor-pointer group">
+                <!-- Lilin -->
+                <div id="candle-container" class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-end space-x-3 z-20">
+                    <div class="relative w-4 h-12 bg-pink-300 rounded-t-sm border-b-2 border-pink-400"><div class="flame"></div></div>
+                    <div class="relative w-4 h-16 bg-blue-300 rounded-t-sm border-b-2 border-blue-400"><div class="flame"></div></div>
+                    <div class="relative w-4 h-12 bg-green-300 rounded-t-sm border-b-2 border-green-400"><div class="flame"></div></div>
+                </div>
+
+                <!-- Lapisan Kue -->
+                <div class="relative">
+                    <!-- Lapisan Atas -->
+                    <div class="cake-layer w-64 h-20 bg-gradient-to-b from-purple-400 to-purple-600 rounded-lg mx-auto">
+                        <div class="frosting">
+                            <div class="frosting-drip drip1"></div>
+                            <div class="frosting-drip drip2"></div>
+                            <div class="frosting-drip drip3"></div>
+                            <div class="frosting-drip drip4"></div>
+                        </div>
+                    </div>
+                    <!-- Lapisan Bawah -->
+                    <div class="cake-layer w-72 h-20 bg-gradient-to-b from-pink-400 to-pink-600 rounded-lg mt-1 mx-auto"></div>
+                </div>
+
+                <!-- Piring -->
+                <div class="w-80 h-6 bg-slate-200 rounded-full mx-auto mt-2 shadow-inner transform perspective-100 rotate-x-10"></div>
+                 <div class="w-80 h-2 bg-slate-400 rounded-full mx-auto -mt-2 shadow-lg"></div>
+            </div>
+            
+            <!-- Konten Kejutan (Awalnya tersembunyi) -->
+            <div id="surprise-content" class="hidden opacity-0 transition-opacity duration-1000 ease-in-out mt-12 max-w-3xl mx-auto">
+                 <h2 class="font-pacifico text-4xl md:text-5xl text-cyan-300 mb-6">Kenangan Indah Kita</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Ganti 'src' dengan URL gambar Anda -->
+                    <img src="img/1.jpeg" alt="Kenangan 1" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                    <img src="/img/2.jpeg" alt="Kenangan 2" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                    <img src="/img/3.jpg" alt="Kenangan 3" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                    <img src="/img/4.jpg" alt="Kenangan 4" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                    <img src="/img/5.jpg" alt="Kenangan 5" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                    <img src="/img/6.jpeg" alt="Kenangan 6" class="rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='https://placehold.co/400x400/cccccc/ffffff?text=Error';">
+                </div>
+                 <p class="mt-8 text-slate-400 text-lg">Semoga panjang umur, sehat selalu, dan semua impianmu tercapai!</p>
+
+                 <!-- Fitur Gemini API: Pembuat Puisi -->
+                 <div id="gemini-feature" class="mt-10">
+                    <button id="generate-poem-btn" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-full transition-all duration-300 shadow-lg transform hover:scale-105">
+                        ✨ Buatkan Puisi Spesial
+                    </button>
+                    <div id="poem-container" class="hidden mt-6 p-6 bg-slate-800/50 rounded-lg text-left text-slate-300 italic border-l-4 border-teal-400">
+                        <p id="poem-text"></p>
+                    </div>
+                    <p id="gemini-error" class="text-red-400 mt-4 hidden">Maaf, terjadi kesalahan saat membuat puisi. Coba lagi nanti.</p>
+                 </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mengambil elemen-elemen yang diperlukan dari DOM
+            const cake = document.getElementById('birthday-cake');
+            const candleContainer = document.getElementById('candle-container');
+            const surpriseContent = document.getElementById('surprise-content');
+            const instruction = document.getElementById('instruction');
+            const canvas = document.getElementById('confetti-canvas');
+            const generatePoemBtn = document.getElementById('generate-poem-btn');
+            const poemContainer = document.getElementById('poem-container');
+            const poemText = document.getElementById('poem-text');
+            const geminiError = document.getElementById('gemini-error');
+            
+            // Membuat instance confetti yang terikat pada canvas
+            const myConfetti = confetti.create(canvas, {
+                resize: true,
+                useWorker: true
+            });
+
+            // Status untuk memastikan animasi hanya berjalan sekali
+            let surpriseTriggered = false;
+
+            // Fungsi untuk meluncurkan kembang api dan confetti
+            const launchSurprise = () => {
+                if (surpriseTriggered) return;
+                surpriseTriggered = true;
+
+                // 1. Sembunyikan lilin dan instruksi
+                candleContainer.style.transition = 'opacity 0.5s';
+                candleContainer.style.opacity = '0';
+                instruction.style.display = 'none';
+                setTimeout(() => candleContainer.style.display = 'none', 500);
+
+                // 2. Tampilkan konten kejutan dengan efek fade-in
+                surpriseContent.classList.remove('hidden');
+                setTimeout(() => {
+                    surpriseContent.classList.remove('opacity-0');
+                    // Scroll ke konten kejutan agar terlihat di layar kecil
+                    surpriseContent.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+
+                // 3. Mulai animasi kembang api dan confetti
+                const duration = 5 * 1000;
+                const animationEnd = Date.now() + duration;
+                const fireworkDefaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+                const interval = setInterval(() => {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    const particleCount = 50 * (timeLeft / duration);
+                    myConfetti(Object.assign({}, fireworkDefaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+                }, 250);
+            };
+
+            // Fungsi untuk memanggil Gemini API dan membuat puisi
+            const generatePoem = async () => {
+                generatePoemBtn.disabled = true;
+                generatePoemBtn.textContent = 'Menciptakan keajaiban...';
+                geminiError.classList.add('hidden');
+                poemContainer.classList.add('hidden');
+
+                // *** PROMPT DIUBAH DI SINI ***
+                const prompt = "Tuliskan sebuah puisi ulang tahun yang romantis, singkat, dan menyentuh hati untuk pacarku.";
+                const apiKey = ""; // Kunci API akan ditangani oleh lingkungan eksekusi
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }]
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const generatedText = result.candidates[0].content.parts[0].text;
+                        poemText.textContent = generatedText;
+                        poemContainer.classList.remove('hidden');
+                        generatePoemBtn.style.display = 'none'; // Sembunyikan tombol setelah berhasil
+                    } else {
+                        throw new Error("Invalid response structure from API.");
+                    }
+
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    geminiError.classList.remove('hidden');
+                    generatePoemBtn.disabled = false;
+                    generatePoemBtn.textContent = '✨ Coba Lagi Buat Puisi';
+                }
+            };
+
+            // Menambahkan event listener
+            cake.addEventListener('click', launchSurprise);
+            generatePoemBtn.addEventListener('click', generatePoem);
+        });
+    </script>
+</body>
+</html>
